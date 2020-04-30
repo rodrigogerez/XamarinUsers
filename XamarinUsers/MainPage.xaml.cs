@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Xamarin.Forms;
+using XamarinUsers.ViewModel;
 
 namespace XamarinUsers
 {
@@ -13,9 +14,18 @@ namespace XamarinUsers
     [DesignTimeVisible(false)]
     public partial class MainPage : ContentPage
     {
-        public MainPage()
+        private MainPageViewModel mainPageViewModel;
+
+        public MainPage(MainPageViewModel vm)
         {
+            BindingContext = vm;
+            mainPageViewModel = vm;
             InitializeComponent();
+        }
+
+        void OnAddButtonClicked(object sender, EventArgs e)
+        {
+            mainPageViewModel.IsAddUserModalOpened = true;
         }
     }
 }

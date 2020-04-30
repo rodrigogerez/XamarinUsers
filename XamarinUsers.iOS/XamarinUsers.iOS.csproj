@@ -67,6 +67,7 @@
     <None Include="Entitlements.plist" />
     <None Include="Info.plist" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="CustomRenderers\CustomFrameRenderer.cs" />
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="Resources\LaunchScreen.storyboard" />
@@ -131,5 +132,9 @@
       <Project>{62E638F9-D31A-4F54-8C9E-9A586C624CC5}</Project>
       <Name>XamarinUsers</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Assets.xcassets\loading.imageset\" />
+    <Folder Include="CustomRenderers\" />
   </ItemGroup>
 </Project>

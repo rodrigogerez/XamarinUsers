@@ -1,7 +1,163 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<ContentPage xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:d="http://xamarin.com/schemas/2014/forms/design" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" x:Class="XamarinUsers.MainPage">
-    <StackLayout>
-        <!-- Place new controls here -->
-        <Label Text="Welcome to Xamarin.Forms!" HorizontalOptions="Center" VerticalOptions="CenterAndExpand" />
-    </StackLayout>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:ffimageloading="clr-namespace:FFImageLoading.Forms;assembly=FFImageLoading.Forms"
+             xmlns:local="clr-namespace:XamarinUsers;assembly=XamarinUsers"
+             xmlns:custom="clr-namespace:XamarinUsers.CustomRenderers"
+             mc:Ignorable="d"
+             x:Class="XamarinUsers.MainPage"
+             Title="Users">
+    <ContentPage.Resources>
+        <Color x:Key="LblColor">#343739</Color>
+
+        <Style x:Key="ModalLabelStyle" TargetType="Label">
+            <Setter Property="FontSize" Value="20"/>
+            <Setter Property="FontAttributes" Value="Bold"/>
+            <Setter Property="Margin" Value="10,0"/>
+            <Setter Property="TextColor" Value="{DynamicResource LblColor}"/>
+        </Style>
+
+        <Style x:Key="EntryStyle" TargetType="Entry">
+            <Setter Property="Margin" Value="0,0,10,0"/>
+        </Style>
+
+        <Style x:Key="ModalButtonStyle" TargetType="Button">
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="FontAttributes" Value="Bold"/>
+            <Setter Property="Margin" Value="10,0"/>
+            <Setter Property="TextColor" Value="#fafafa"/>
+            <Setter Property="CornerRadius" Value="10"/>
+        </Style>
+    </ContentPage.Resources>
+    <RelativeLayout BackgroundColor="White" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
+        <AbsoluteLayout RelativeLayout.XConstraint="{ConstraintExpression Type=RelativeToParent, Property=Width, Factor=0}"
+                        RelativeLayout.YConstraint="{ConstraintExpression Type=RelativeToParent, Property=Height, Factor=0}"
+                        RelativeLayout.WidthConstraint="{ConstraintExpression Type=RelativeToParent,Property=Width, Factor=1}"
+                        RelativeLayout.HeightConstraint="{ConstraintExpression Type=RelativeToParent,Property=Height, Factor=1}">
+
+            <ActivityIndicator VerticalOptions="Center"
+                                HorizontalOptions="Center"
+                                IsRunning="{Binding IsActivityIndicatorRunning}"
+                                Color="#4D7EE1" />
+
+
+            <ListView ItemsSource="{Binding UserObservableCollection}" HasUnevenRows="true" SeparatorColor="Gray">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <StackLayout Orientation="Horizontal" Margin="5" HeightRequest="90">
+                                <Grid VerticalOptions="Center" RowSpacing="2">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="auto" />
+                                        <ColumnDefinition Width="auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*" />
+                                        <RowDefinition Height="*" />
+                                    </Grid.RowDefinitions>
+
+                                    <ffimageloading:CachedImage Grid.Column="0"
+                                                                Grid.Row="0"
+                                                                Grid.RowSpan="2"
+	                                                            BitmapOptimizations="true"
+                                                                Source="{Binding AvatarImage.AvatarObject.ProfileImageUrl}"
+                                                                LoadingPlaceholder="https://cdn4.iconfinder.com/data/icons/user-management-soft/512/loading-512.png"
+                                                                Aspect="AspectFit" />
+
+                                    <StackLayout Grid.Column="1"
+                                                Grid.Row="0"
+                                                Grid.ColumnSpan="2"
+                                                Orientation="Horizontal"
+                                                VerticalOptions="Center">
+                                        <Label Text="{Binding FirstName}" />
+                                        <Label Text="{Binding LastName}" />
+                                    </StackLayout>
+
+                                    <Label Grid.Column="1"
+                                            Grid.Row="1"
+                                            Text="Phone:" />
+                                    <Label Grid.Column="2"
+                                            Grid.Row="1"
+                                            Text="{Binding PhoneNumber}"
+                                            TextColor="#1C5AD8" />
+                                </Grid>
+                            </StackLayout>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+
+            <ImageButton Source="{local:ImageResource XamarinUsers.Resources.plus.png}"
+                         Aspect="AspectFill"
+                         BackgroundColor="Transparent"
+                         AbsoluteLayout.LayoutFlags="PositionProportional"  
+                         AbsoluteLayout.LayoutBounds=".95,.95,60,60"
+                         Clicked="OnAddButtonClicked"/>
+        </AbsoluteLayout>
+
+        <ContentView 
+                         RelativeLayout.XConstraint="{ConstraintExpression Type=RelativeToParent, Property=Width, Factor=0}"
+                         RelativeLayout.YConstraint="{ConstraintExpression Type=RelativeToParent, Property=Height, Factor=0}"
+                         RelativeLayout.WidthConstraint="{ConstraintExpression Type=RelativeToParent,Property=Width, Factor=1}"
+                         RelativeLayout.HeightConstraint="{ConstraintExpression Type=RelativeToParent,Property=Height, Factor=1}" 
+                         IsVisible="{Binding IsAddUserModalOpened}">
+            <ScrollView HorizontalOptions="CenterAndExpand" VerticalOptions="Center">
+                    <StackLayout HeightRequest="300" WidthRequest="350" BackgroundColor="#fafafa">
+                        <StackLayout HeightRequest="40" WidthRequest="350" BackgroundColor="#06623b">
+                            <Label Text="Add New User" FontSize="28" TextColor="White" HorizontalOptions="Center" />
+                        </StackLayout>
+
+                        <Grid VerticalOptions="Center" RowSpacing="15">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+
+                            <Label Text="First name:" Style="{StaticResource ModalLabelStyle}" Grid.Column="0" Grid.Row="0" />
+                            <Entry Text="{Binding FirstNameText}" Keyboard="Text" Grid.Column="1" Grid.Row="0" Style="{StaticResource EntryStyle}" />
+
+                            <Label Text="Last name:" Style="{StaticResource ModalLabelStyle}" Grid.Column="0" Grid.Row="1" />
+                            <Entry Text="{Binding LastNameText}" Keyboard="Text" Grid.Column="1" Grid.Row="1" Style="{StaticResource EntryStyle}" />
+
+                            <Label Text="Phone:" Style="{StaticResource ModalLabelStyle}" Grid.Column="0" Grid.Row="2" />
+                            <Entry Text="{Binding PhoneText}" Keyboard="Numeric" Grid.Column="1" Grid.Row="2" Style="{StaticResource EntryStyle}" />
+                        </Grid>
+
+                        <Label Text="Please complete all the fields." IsVisible="{Binding IsErrorMessageVisible}" TextColor="Red" HorizontalOptions="Center" />
+
+                        <Grid VerticalOptions="EndAndExpand" RowSpacing="10" Margin="0,15" >
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+
+                            <Button Grid.Column="0"
+                                    Grid.Row="0"
+                                    Text="Cancel"
+                                    Command="{Binding CancelCommand}"
+                                    BackgroundColor="red"
+                                    Style="{StaticResource ModalButtonStyle}" />
+
+                            <Button Grid.Column="1"
+                                    Grid.Row="0"
+                                    Text="Save"
+                                    Command="{Binding SaveCommand}"
+                                    BackgroundColor="Green"
+                                    Style="{StaticResource ModalButtonStyle}"  />
+                        </Grid>
+                    </StackLayout>
+            </ScrollView>
+        </ContentView>
+    </RelativeLayout>
 </ContentPage>
