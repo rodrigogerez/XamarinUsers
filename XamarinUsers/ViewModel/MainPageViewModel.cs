@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Plugin.Media;
 using Xamarin.Forms;
 using XamarinUsers.Model;
 using XamarinUsers.Services;
@@ -11,7 +12,14 @@ namespace XamarinUsers.ViewModel
 {
     public class MainPageViewModel : INotifyPropertyChanged
     {
-        #region public properties
+        #region constants
+
+        private const string PHOTO_ADDED = "Photo added.";
+        private const string PHOTO_UNABLE = "This functionality is not able for your device.";
+
+        #endregion
+
+        #region bindable properties
 
         private ObservableCollection<User> _userObservableCollection;
         public ObservableCollection<User> UserObservableCollection
@@ -90,49 +98,35 @@ namespace XamarinUsers.ViewModel
             }
         }
 
+        private string _photoMessage;
+        public string PhotoMessage
+        {
+            get => _photoMessage;
+            set
+            {
+                _photoMessage = value;
+                OnPropertyChanged(nameof(PhotoMessage));
+            }
+        }
+
+        private bool _isPhotoAdded;
+        public bool IsPhotoAdded
+        {
+            get => _isPhotoAdded;
+            set
+            {
+                _isPhotoAdded = value;
+                OnPropertyChanged(nameof(IsPhotoAdded));
+            }
+        }
+
         #endregion
 
         #region commands
 
         public Command SaveCommand { get; private set; }
         public Command CancelCommand { get; private set; }
-
-        #endregion
-
-        #region public methods
-
-        public async Task GetAllUsers()
-        {
-            IsActivityIndicatorRunning = true;
-            var userList = await userService.GetUsers();
-            if (userList != null)
-                UserObservableCollection = new ObservableCollection<User>(userList);
-
-            IsActivityIndicatorRunning = false;
-        }
-
-        public void AddNewUser()
-        {
-            if (string.IsNullOrEmpty(FirstNameText) || string.IsNullOrEmpty(LastNameText) || string.IsNullOrEmpty(PhoneText))
-            {
-                IsErrorMessageVisible = true;
-                return;
-            }
-
-            User user = new User
-            {
-                FirstName = FirstNameText,
-                LastName = LastNameText,
-                PhoneNumber = PhoneText,
-                Status = "Active"
-            };
-
-            UserObservableCollection.Add(user);
-
-            IsAddUserModalOpened = false;
-
-            CleanEntryFields();
-        }
+        public Command AddUserPhotoCommand { get; private set; }
 
         #endregion
 
@@ -146,6 +140,7 @@ namespace XamarinUsers.ViewModel
 
             SaveCommand = new Command(() => AddNewUser());
             CancelCommand = new Command(() => { IsAddUserModalOpened = false; CleanEntryFields(); });
+            AddUserPhotoCommand = new Command(async () => await TakePhoto());
         }
 
         #endregion
@@ -179,6 +174,65 @@ namespace XamarinUsers.ViewModel
             PhoneText = string.Empty;
 
             IsErrorMessageVisible = false;
+
+            IsPhotoAdded = false;
+        }
+
+        private void AddNewUser()
+        {
+            if (string.IsNullOrEmpty(FirstNameText) || string.IsNullOrEmpty(LastNameText) || string.IsNullOrEmpty(PhoneText))
+            {
+                IsErrorMessageVisible = true;
+                return;
+            }
+
+            User user = new User
+            {
+                FirstName = FirstNameText,
+                LastName = LastNameText,
+                PhoneNumber = PhoneText,
+                Status = "Active"
+            };
+
+            UserObservableCollection.Add(user);
+
+            IsAddUserModalOpened = false;
+
+            CleanEntryFields();
+        }
+
+        private async Task TakePhoto()
+        {
+            await CrossMedia.Current.Initialize();
+
+            if (!CrossMedia.Current.IsCameraAvailable || !CrossMedia.Current.IsTakePhotoSupported)
+            {
+                PhotoMessage = PHOTO_UNABLE;
+                IsPhotoAdded = true;
+                return;
+            }
+
+            var file = await CrossMedia.Current.TakePhotoAsync(new Plugin.Media.Abstractions.StoreCameraMediaOptions
+            {
+                Directory = "Sample",
+                Name = "test.jpg"
+            });
+
+            if (file == null)
+                return;
+
+            PhotoMessage = PHOTO_ADDED;
+            IsPhotoAdded = true;
+        }
+
+        private async Task GetAllUsers()
+        {
+            IsActivityIndicatorRunning = true;
+            var userList = await userService.GetUsers();
+            if (userList != null)
+                UserObservableCollection = new ObservableCollection<User>(userList);
+
+            IsActivityIndicatorRunning = false;
         }
 
         #endregion

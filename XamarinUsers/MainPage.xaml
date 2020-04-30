@@ -31,19 +31,12 @@
             <Setter Property="CornerRadius" Value="10"/>
         </Style>
     </ContentPage.Resources>
-    <RelativeLayout BackgroundColor="White" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
+    <RelativeLayout BackgroundColor="White" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" >
         <AbsoluteLayout RelativeLayout.XConstraint="{ConstraintExpression Type=RelativeToParent, Property=Width, Factor=0}"
                         RelativeLayout.YConstraint="{ConstraintExpression Type=RelativeToParent, Property=Height, Factor=0}"
                         RelativeLayout.WidthConstraint="{ConstraintExpression Type=RelativeToParent,Property=Width, Factor=1}"
                         RelativeLayout.HeightConstraint="{ConstraintExpression Type=RelativeToParent,Property=Height, Factor=1}">
-
-            <ActivityIndicator VerticalOptions="Center"
-                                HorizontalOptions="Center"
-                                IsRunning="{Binding IsActivityIndicatorRunning}"
-                                Color="#4D7EE1" />
-
-
-            <ListView ItemsSource="{Binding UserObservableCollection}" HasUnevenRows="true" SeparatorColor="Gray">
+            <ListView ItemsSource="{Binding UserObservableCollection}" HasUnevenRows="true" SeparatorColor="Gray" Margin="0,0,0,200">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <ViewCell>
@@ -98,19 +91,29 @@
                          Clicked="OnAddButtonClicked"/>
         </AbsoluteLayout>
 
-        <ContentView 
-                         RelativeLayout.XConstraint="{ConstraintExpression Type=RelativeToParent, Property=Width, Factor=0}"
-                         RelativeLayout.YConstraint="{ConstraintExpression Type=RelativeToParent, Property=Height, Factor=0}"
-                         RelativeLayout.WidthConstraint="{ConstraintExpression Type=RelativeToParent,Property=Width, Factor=1}"
-                         RelativeLayout.HeightConstraint="{ConstraintExpression Type=RelativeToParent,Property=Height, Factor=1}" 
-                         IsVisible="{Binding IsAddUserModalOpened}">
+        <ContentView RelativeLayout.XConstraint="{ConstraintExpression Type=RelativeToParent, Property=Width, Factor=0}"
+                     RelativeLayout.YConstraint="{ConstraintExpression Type=RelativeToParent, Property=Height, Factor=0}"
+                     RelativeLayout.WidthConstraint="{ConstraintExpression Type=RelativeToParent,Property=Width, Factor=1}"
+                     RelativeLayout.HeightConstraint="{ConstraintExpression Type=RelativeToParent,Property=Height, Factor=1}" 
+                     IsVisible="{Binding IsActivityIndicatorRunning}">
+            <ActivityIndicator VerticalOptions="Center"
+                               HorizontalOptions="Center"
+                               IsRunning="{Binding IsActivityIndicatorRunning}"
+                               Color="#06623b" />
+        </ContentView>
+
+        <ContentView RelativeLayout.XConstraint="{ConstraintExpression Type=RelativeToParent, Property=Width, Factor=0}"
+                     RelativeLayout.YConstraint="{ConstraintExpression Type=RelativeToParent, Property=Height, Factor=0}"
+                     RelativeLayout.WidthConstraint="{ConstraintExpression Type=RelativeToParent,Property=Width, Factor=1}"
+                     RelativeLayout.HeightConstraint="{ConstraintExpression Type=RelativeToParent,Property=Height, Factor=1}" 
+                     IsVisible="{Binding IsAddUserModalOpened}">
             <ScrollView HorizontalOptions="CenterAndExpand" VerticalOptions="Center">
-                    <StackLayout HeightRequest="300" WidthRequest="350" BackgroundColor="#fafafa">
+                    <StackLayout HeightRequest="400" WidthRequest="350" BackgroundColor="#fafafa">
                         <StackLayout HeightRequest="40" WidthRequest="350" BackgroundColor="#06623b">
                             <Label Text="Add New User" FontSize="28" TextColor="White" HorizontalOptions="Center" />
                         </StackLayout>
 
-                        <Grid VerticalOptions="Center" RowSpacing="15">
+                        <Grid VerticalOptions="Center" RowSpacing="10">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="auto" />
                                 <ColumnDefinition Width="*" />
@@ -130,6 +133,14 @@
                             <Label Text="Phone:" Style="{StaticResource ModalLabelStyle}" Grid.Column="0" Grid.Row="2" />
                             <Entry Text="{Binding PhoneText}" Keyboard="Numeric" Grid.Column="1" Grid.Row="2" Style="{StaticResource EntryStyle}" />
                         </Grid>
+
+                        <Button HorizontalOptions="Center"
+                                Text="Add User Photo"
+                                Command="{Binding AddUserPhotoCommand}"
+                                BackgroundColor="Gray"
+                                Style="{StaticResource ModalButtonStyle}" />
+
+                        <Label Text="{Binding PhotoMessage}" IsVisible="{Binding IsPhotoAdded}" HorizontalOptions="Center" />
 
                         <Label Text="Please complete all the fields." IsVisible="{Binding IsErrorMessageVisible}" TextColor="Red" HorizontalOptions="Center" />
 
